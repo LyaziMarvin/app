@@ -1,17 +1,31 @@
+require('dotenv').config();
+
 const express = require("express");
 const neo4j = require("neo4j-driver");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = "1234";
+
+// Load configuration from environment variables
+const PORT = process.env.PORT || 5003;
+const SECRET_KEY = process.env.JWT_SECRET || "1234";
+const NEO4J_URI = process.env.NEO4J_URI || "neo4j://184.168.29.119:7687";
+const NEO4J_USER = process.env.NEO4J_USER || "neo4j";
+const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD || "ooglobeneo4j";
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : '*',
+  credentials: true
+};
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 const driver = neo4j.driver(
-  "neo4j://184.168.29.119:7687",
-  neo4j.auth.basic("neo4j", "ooglobeneo4j")
+  NEO4J_URI,
+  neo4j.auth.basic(NEO4J_USER, NEO4J_PASSWORD)
 );
 
 const axios = require('axios');
@@ -565,9 +579,13 @@ app.delete('/admin/worker/:workerID', authenticateAdmin, async (req, res) => {
 
 
 
-app.listen(5003, () => console.log("Backend running on port 5003"));
+app.listen(PORT, () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Neo4j URI: ${NEO4J_URI}`);
+});
 
 
- 
+
 
 
