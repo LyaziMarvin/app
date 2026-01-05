@@ -34,7 +34,7 @@ pm2 save
 
 # ===== Frontend (Worker Portal) Deployment =====
 echo "🚀 Deploying Worker Portal (Frontend)..."
-cd /var/www/app/frontend
+cd /var/www/app/worker-frontend
 echo "🧹 Cleaning and reinstalling frontend dependencies..."
 rm -rf node_modules package-lock.json
 npm install
@@ -61,7 +61,7 @@ fi
 
 # ===== Frontend 1 (Patient Portal) Deployment =====
 echo "🚀 Deploying Patient Portal (Frontend 1)..."
-cd "/var/www/app/frontend 1"
+cd /var/www/app/patient-frontend
 echo "🧹 Cleaning and reinstalling frontend dependencies..."
 rm -rf node_modules package-lock.json
 npm install
@@ -82,7 +82,7 @@ fi
 
 # ===== Frontend 2 (Admin Portal) Deployment =====
 echo "🚀 Deploying Admin Portal (Frontend 2)..."
-cd "/var/www/app/frontend 2"
+cd /var/www/app/admin-frontend
 echo "🧹 Cleaning and reinstalling frontend dependencies..."
 rm -rf node_modules package-lock.json
 npm install

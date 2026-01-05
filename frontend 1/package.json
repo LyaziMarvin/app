@@ -1,6 +1,7 @@
 {
   "name": "sledss",
   "version": "0.1.0",
+  "homepage": "/patient",
   "private": true,
   "dependencies": {
     "axios": "^1.7.9",
