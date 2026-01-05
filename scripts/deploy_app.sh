@@ -27,8 +27,9 @@ rm -rf node_modules package-lock.json
 npm install
 
 echo "🔁 Restarting backend PM2 service..."
-pm2 stop healthcare-backend || true
-pm2 restart healthcare-backend || pm2 start server.js --name healthcare-backend
+pm2 stop healthcare-backend 2>/dev/null || true
+pm2 delete healthcare-backend 2>/dev/null || true
+pm2 start server.js --name healthcare-backend
 pm2 save
 
 # ===== Frontend (Worker Portal) Deployment =====
@@ -42,8 +43,8 @@ echo "🏗️ Building Worker Portal for production..."
 npm run build
 
 echo "🔁 Restarting Worker Portal service via PM2..."
-pm2 stop worker-portal || true
-pm2 delete worker-portal || true
+pm2 stop worker-portal 2>/dev/null || true
+pm2 delete worker-portal 2>/dev/null || true
 
 # Ensure 'http-server' is available
 if ! command -v http-server &> /dev/null; then
@@ -69,8 +70,8 @@ echo "🏗️ Building Patient Portal for production..."
 npm run build
 
 echo "🔁 Restarting Patient Portal service via PM2..."
-pm2 stop patient-portal || true
-pm2 delete patient-portal || true
+pm2 stop patient-portal 2>/dev/null || true
+pm2 delete patient-portal 2>/dev/null || true
 
 if [ -d "build" ]; then
     pm2 start http-server --name patient-portal -- build -p 3008 -a 0.0.0.0
@@ -90,8 +91,8 @@ echo "🏗️ Building Admin Portal for production..."
 npm run build
 
 echo "🔁 Restarting Admin Portal service via PM2..."
-pm2 stop admin-portal || true
-pm2 delete admin-portal || true
+pm2 stop admin-portal 2>/dev/null || true
+pm2 delete admin-portal 2>/dev/null || true
 
 if [ -d "build" ]; then
     pm2 start http-server --name admin-portal -- build -p 3010 -a 0.0.0.0
