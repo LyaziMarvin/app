@@ -95,7 +95,7 @@ pm2 stop admin-portal 2>/dev/null || true
 pm2 delete admin-portal 2>/dev/null || true
 
 if [ -d "build" ]; then
-    pm2 start http-server --name admin-portal -- build -p 3010 -a 0.0.0.0
+    pm2 start http-server --name admin-portal -- build -p 3011 -a 0.0.0.0
 else
     echo "❌ Error: Admin Portal build directory not found!"
     exit 1
@@ -116,4 +116,4 @@ echo "📊 Services running:"
 echo "  - Backend API: Port 5003"
 echo "  - Worker Portal: Port 3007"
 echo "  - Patient Portal: Port 3008"
-echo "  - Admin Portal: Port 3010"
+echo "  - Admin Portal: Port 3011"

@@ -47,7 +47,7 @@ pm2 save                    # Save current process list
 
 - Worker Portal: <http://yourdomain.com:3007> or /worker
 - Patient Portal: <http://yourdomain.com:3008> or /patient
-- Admin Portal: <http://yourdomain.com:3010> or /admin
+- Admin Portal: <http://yourdomain.com:3011> or /admin
 - Backend API: <http://yourdomain.com:5003>
 
 ## Troubleshooting
@@ -57,7 +57,7 @@ pm2 save                    # Save current process list
 pm2 status
 
 # Check ports
-sudo netstat -tulpn | grep -E '3007|3008|3010|5003'
+sudo netstat -tulpn | grep -E '3007|3008|3011|5003'
 
 # Check nginx logs
 sudo tail -f /var/log/nginx/error.log
