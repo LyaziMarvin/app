@@ -27,14 +27,14 @@ const App = () => {
   };
 
   return (
-    <Router>
+    <Router basename="/patient">
       <div style={menuStyle}>
-    <Link to="/">
-        <img src={logo} alt="Logo" style={logoStyle} />
-    </Link>
-    <Link to="/" style={{ ...welcomeStyle, textDecoration: 'none', cursor: 'pointer' }}>
-  Family Circle 
-</Link>
+        <Link to="/">
+          <img src={logo} alt="Logo" style={logoStyle} />
+        </Link>
+        <Link to="/" style={{ ...welcomeStyle, textDecoration: 'none', cursor: 'pointer' }}>
+          Family Circle
+        </Link>
 
         <div style={menuLinksStyle}>
           <Logout />
@@ -42,10 +42,10 @@ const App = () => {
           <Link style={linkStyle} to="/dashboard">Dashboard</Link>
 
           <div style={{ position: "relative" }}>
-            
-          <span style={{ ...linkStyle, color: "white" }} onClick={toggleDropdown}>
-  
-</span>
+
+            <span style={{ ...linkStyle, color: "white" }} onClick={toggleDropdown}>
+
+            </span>
 
             {demoDropdown && (
               <div style={dropdownStyle} onMouseLeave={closeDropdown}>
@@ -88,7 +88,7 @@ const App = () => {
               </div>
             )}
           </div>
-          
+
           <Link style={linkStyle} to="/about"></Link>
           <Link style={linkStyle} to="/evaluation"></Link>
           <Link style={linkStyle} to="/evaluation"></Link>
@@ -101,8 +101,8 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/register" element={<Page1 />} />
           <Route path="/logout" element={<Logout />} />
-           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
         </Routes>
       </div>
     </Router>
