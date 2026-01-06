@@ -54,7 +54,7 @@ const Dashboard = () => {
   return (
     <div style={bodyStyle}>
       <div style={formStyle}>
-        <h1 style={headerStyle}>Patient Profile</h1>
+        <h1 style={headerStyle}>User Profile</h1>
 
         <input
           style={inputStyle}

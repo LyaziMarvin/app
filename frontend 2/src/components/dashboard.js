@@ -1,41 +1,73 @@
 import { useState } from 'react';
-import PatientList from './patientList';
-import WorkerMap from './workerMap';
-import WorkerList from './workerList';
+import GlobalMap from './workerMap';
 
 const AdminDashboard = () => {
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [workers, setWorkers] = useState([]);
+  const [inputLanguage, setInputLanguage] = useState('');
+  const [activeLanguageFilter, setActiveLanguageFilter] = useState('');
+
+  const applyFilter = () => {
+    setActiveLanguageFilter(inputLanguage.trim());
+  };
+
+  const clearFilter = () => {
+    setInputLanguage('');
+    setActiveLanguageFilter('');
+  };
 
   return (
-    <div style={layout}>
-      <PatientList onSelect={setSelectedPatient} />
+    <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr' }}>
+      <div style={sidebar}>
+        <h3>Filter Remote Workers</h3>
 
-      <div>
-        {selectedPatient && (
-          <>
-            <WorkerMap
-              patient={selectedPatient}
-              onWorkersLoaded={setWorkers}
-            />
+        <input
+          placeholder="Enter language (e.g English)"
+          value={inputLanguage}
+          onChange={e => setInputLanguage(e.target.value)}
+          style={input}
+        />
 
-            <WorkerList
-              workers={workers}
-              onDeleted={() => setSelectedPatient({ ...selectedPatient })}
-            />
-          </>
-        )}
+        <button style={btn} onClick={applyFilter}>
+          Apply Filter
+        </button>
+
+        <button style={clearBtn} onClick={clearFilter}>
+          Clear Filter
+        </button>
       </div>
+
+      <GlobalMap languageFilter={activeLanguageFilter} />
     </div>
   );
 };
 
-const layout = {
-  display: 'grid',
-  gridTemplateColumns: '350px 1fr',
-  height: '100vh'
+const sidebar = {
+  padding: 20,
+  background: '#f4f4f4',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px'
+};
+
+const input = {
+  width: '100%',
+  padding: '8px'
+};
+
+const btn = {
+  padding: '10px',
+  background: '#007bff',
+  color: '#fff',
+  border: 'none',
+  cursor: 'pointer'
+};
+
+const clearBtn = {
+  padding: '10px',
+  background: '#666',
+  color: '#fff',
+  border: 'none',
+  cursor: 'pointer'
 };
 
 export default AdminDashboard;
-
 

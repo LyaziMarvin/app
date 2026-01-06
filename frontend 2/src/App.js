@@ -7,7 +7,7 @@ import Page1 from "./components/page1";
 import logo from "./images/cape.png";
 import ProtectedRoute from "./components/protected";
 import Logout from "./components/logout";
-import WorkerMap from "./components/workerMap";
+import GlobalMap from "./components/workerMap";
 import PatientList from "./components/patientList";
 import WorkerList from "./components/workerList";
 
@@ -105,7 +105,7 @@ const App = () => {
           <Route path="/register" element={<Page1 />} />
           <Route path="/logout" element={<Logout />} />
            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/workerMap" element={<ProtectedRoute><WorkerMap /></ProtectedRoute>} />
+            <Route path="/workerMap" element={<ProtectedRoute><GlobalMap /></ProtectedRoute>} />
              <Route path="/patientList" element={<ProtectedRoute><PatientList /></ProtectedRoute>} />
 
               <Route path="/workerList" element={<ProtectedRoute><WorkerList /></ProtectedRoute>} />

@@ -134,7 +134,8 @@ app.post("/worker/profile", async (req, res) => {
     spokenLanguage,
     country,
     city,
-    whatsapp
+    whatsapp,
+    rate                                  // ✅ NEW
   } = req.body;
 
   const session = driver.session();
@@ -154,6 +155,7 @@ app.post("/worker/profile", async (req, res) => {
       w.country = $country,
       w.city = $city,
       w.whatsapp = $whatsapp,
+      w.rate = $rate,
       w.latitude = $latitude,
       w.longitude = $longitude
     `,
@@ -165,13 +167,15 @@ app.post("/worker/profile", async (req, res) => {
       country,
       city,
       whatsapp,
+      rate,
       latitude: location.latitude,
       longitude: location.longitude
     }
   );
 
-  res.json({ message: "Worker profile updated with location" });
+  res.json({ message: "Worker profile updated with rate and location" });
 });
+
 
 
 
@@ -452,19 +456,15 @@ app.get('/admin/patients', async (req, res) => {
 });
 
 
-app.get('/admin/match-workers/:patientID', async (req, res) => {
-  const { patientID } = req.params;
+app.get('/admin/workers', async (req, res) => {
+  const { language } = req.query;
   const session = driver.session();
 
-  const result = await session.run(
-    `
-    MATCH (p:Patient {patientID: $patientID})
+  const query = `
     MATCH (w:RemoteWorker)
-    WHERE
-      toLower(w.spokenLanguage) = toLower(p.spokenLanguage)
-      AND toLower(w.country) = toLower(p.country)
-      AND w.latitude IS NOT NULL
+    WHERE w.latitude IS NOT NULL
       AND w.longitude IS NOT NULL
+      ${language ? 'AND toLower(w.spokenLanguage) CONTAINS toLower($language)' : ''}
     RETURN
       w.workerID AS workerID,
       w.firstName AS firstName,
@@ -473,16 +473,42 @@ app.get('/admin/match-workers/:patientID', async (req, res) => {
       w.city AS city,
       w.spokenLanguage AS spokenLanguage,
       w.status AS status,
+      w.whatsapp AS whatsapp,
+      w.rate AS rate,
       w.latitude AS latitude,
       w.longitude AS longitude
-    `,
-    { patientID }
-  );
+  `;
 
+  const result = await session.run(query, { language });
   await session.close();
 
   res.json(result.records.map(r => r.toObject()));
 });
+
+
+app.get('/admin/patients-map', async (req, res) => {
+  const session = driver.session();
+
+  const result = await session.run(`
+    MATCH (p:Patient)
+    WHERE p.latitude IS NOT NULL AND p.longitude IS NOT NULL
+    RETURN
+      p.patientID AS patientID,
+      p.firstName AS firstName,
+      p.lastName AS lastName,
+      p.country AS country,
+      p.city AS city,
+      p.whatsapp AS whatsapp,
+      p.spokenLanguage AS spokenLanguage,
+      p.latitude AS latitude,
+      p.longitude AS longitude
+  `);
+
+  await session.close();
+  res.json(result.records.map(r => r.toObject()));
+});
+
+
 
 
 app.get('/admin/worker/:workerID', async (req, res) => {
