@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import axios from "axios";
 import { ENV } from "../config/env";
 
-
-
 const Dashboard = () => {
   const workerID = localStorage.getItem('workerID');
 
@@ -11,27 +9,29 @@ const Dashboard = () => {
   const [lastName, setLastName] = useState('');
   const [spokenLanguage, setSpokenLanguage] = useState('');
   const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');            // ✅ added
+  const [city, setCity] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
+  const [rate, setRate] = useState(5);              // ✅ NEW
   const [status, setStatus] = useState('available');
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Fetch worker profile on load
+  // 🔹 Fetch worker profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-  `${ENV.WORKER_PROFILE_URL}/${workerID}`
-);
+          `${ENV.WORKER_PROFILE_URL}/${workerID}`
+        );
 
         setFirstName(res.data.firstName || '');
         setLastName(res.data.lastName || '');
         setSpokenLanguage(res.data.spokenLanguage || '');
         setCountry(res.data.country || '');
-        setCity(res.data.city || '');              // ✅ added
+        setCity(res.data.city || '');
         setWhatsapp(res.data.whatsapp || '');
+        setRate(res.data.rate || 5);                // ✅ NEW
         setStatus(res.data.status || 'available');
-      } catch (err) {
+      } catch {
         alert('Failed to load profile');
       } finally {
         setLoading(false);
@@ -48,84 +48,51 @@ const Dashboard = () => {
       lastName,
       spokenLanguage,
       country,
-      city,                                           // ✅ added
-      whatsapp
+      city,
+      whatsapp,
+      rate                                      // ✅ SEND RATE
     });
 
     alert('Profile updated');
   };
 
   const updateStatus = async () => {
-   await axios.post(ENV.WORKER_STATUS_URL, {
-  workerID,
-  status
-});
+    await axios.post(ENV.WORKER_STATUS_URL, {
+      workerID,
+      status
+    });
 
     alert('Status updated');
   };
 
-  if (loading) {
-    return <p style={{ textAlign: 'center' }}>Loading profile...</p>;
-  }
+  if (loading) return <p style={{ textAlign: 'center' }}>Loading profile...</p>;
 
   return (
     <div style={bodyStyle}>
       <div style={formStyle}>
         <h1 style={headerStyle}>Worker Profile</h1>
 
-        <div style={inputContainerStyle}>
-          <label>First Name</label>
-          <input
-            style={inputStyle}
-            value={firstName}
-            onChange={e => setFirstName(e.target.value)}
-          />
-        </div>
+        <Input label="First Name" value={firstName} setValue={setFirstName} />
+        <Input label="Last Name" value={lastName} setValue={setLastName} />
+        <Input label="Spoken Language" value={spokenLanguage} setValue={setSpokenLanguage} />
+        <Input label="Country" value={country} setValue={setCountry} />
+        <Input label="City" value={city} setValue={setCity} />
+        <Input label="WhatsApp Number" value={whatsapp} setValue={setWhatsapp} />
 
+        {/* ✅ RATE DROPDOWN */}
         <div style={inputContainerStyle}>
-          <label>Last Name</label>
-          <input
+          <label>Hourly Rate (USD)</label>
+          <select
             style={inputStyle}
-            value={lastName}
-            onChange={e => setLastName(e.target.value)}
-          />
-        </div>
-
-        <div style={inputContainerStyle}>
-          <label>Spoken Language</label>
-          <input
-            style={inputStyle}
-            value={spokenLanguage}
-            onChange={e => setSpokenLanguage(e.target.value)}
-          />
-        </div>
-
-        <div style={inputContainerStyle}>
-          <label>Country</label>
-          <input
-            style={inputStyle}
-            value={country}
-            onChange={e => setCountry(e.target.value)}
-          />
-        </div>
-
-        {/* ✅ CITY FIELD */}
-        <div style={inputContainerStyle}>
-          <label>City</label>
-          <input
-            style={inputStyle}
-            value={city}
-            onChange={e => setCity(e.target.value)}
-          />
-        </div>
-
-        <div style={inputContainerStyle}>
-          <label>WhatsApp Number</label>
-          <input
-            style={inputStyle}
-            value={whatsapp}
-            onChange={e => setWhatsapp(e.target.value)}
-          />
+            value={rate}
+            onChange={e => setRate(Number(e.target.value))}
+          >
+            {[...Array(20)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                ${i + 1} / hour
+              </option>
+            ))}
+          </select>
         </div>
 
         <button style={buttonStyle} onClick={saveProfile}>
@@ -150,6 +117,18 @@ const Dashboard = () => {
     </div>
   );
 };
+
+/* ===== Reusable input ===== */
+const Input = ({ label, value, setValue }) => (
+  <div style={inputContainerStyle}>
+    <label>{label}</label>
+    <input
+      style={inputStyle}
+      value={value}
+      onChange={e => setValue(e.target.value)}
+    />
+  </div>
+);
 
 /* ===== styles ===== */
 const bodyStyle = {
@@ -193,6 +172,7 @@ const buttonStyle = {
 };
 
 export default Dashboard;
+
 
 
 
