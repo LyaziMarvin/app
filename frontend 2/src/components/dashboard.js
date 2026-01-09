@@ -2,72 +2,101 @@ import { useState } from 'react';
 import GlobalMap from './workerMap';
 
 const AdminDashboard = () => {
-  const [inputLanguage, setInputLanguage] = useState('');
-  const [activeLanguageFilter, setActiveLanguageFilter] = useState('');
+  const [languageInput, setLanguageInput] = useState('');
+  const [appliedLanguage, setAppliedLanguage] = useState(null);
 
   const applyFilter = () => {
-    setActiveLanguageFilter(inputLanguage.trim());
+    if (languageInput.trim() === '') return;
+    setAppliedLanguage(languageInput.trim());
   };
 
   const clearFilter = () => {
-    setInputLanguage('');
-    setActiveLanguageFilter('');
+    setLanguageInput('');
+    setAppliedLanguage(null);
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr' }}>
+    <div style={layout}>
+      {/* ===== LEFT SIDEBAR ===== */}
       <div style={sidebar}>
-        <h3>Filter Remote Workers</h3>
+        <h3 style={title}>Filter Workers</h3>
 
         <input
-          placeholder="Enter language (e.g English)"
-          value={inputLanguage}
-          onChange={e => setInputLanguage(e.target.value)}
+          type="text"
+          placeholder="Language (e.g. English)"
+          value={languageInput}
+          onChange={e => setLanguageInput(e.target.value)}
           style={input}
         />
 
-        <button style={btn} onClick={applyFilter}>
+        <button style={btnPrimary} onClick={applyFilter}>
           Apply Filter
         </button>
 
-        <button style={clearBtn} onClick={clearFilter}>
+        <button style={btnSecondary} onClick={clearFilter}>
           Clear Filter
         </button>
       </div>
 
-      <GlobalMap languageFilter={activeLanguageFilter} />
+      {/* ===== MAP ===== */}
+      <div style={mapContainer}>
+        <GlobalMap appliedLanguage={appliedLanguage} />
+      </div>
     </div>
   );
 };
 
+/* =====================
+   STYLES
+===================== */
+
+const layout = {
+  display: 'grid',
+  gridTemplateColumns: '260px 1fr',
+  height: '100vh',
+};
+
 const sidebar = {
-  padding: 20,
+  padding: '20px',
   background: '#f4f4f4',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px'
+  borderRight: '1px solid #ddd',
+};
+
+const title = {
+  marginBottom: '15px',
 };
 
 const input = {
   width: '100%',
-  padding: '8px'
+  padding: '10px',
+  marginBottom: '10px',
+  fontSize: '14px',
 };
 
-const btn = {
+const btnPrimary = {
+  width: '100%',
   padding: '10px',
   background: '#007bff',
   color: '#fff',
   border: 'none',
-  cursor: 'pointer'
+  cursor: 'pointer',
+  marginBottom: '10px',
 };
 
-const clearBtn = {
+const btnSecondary = {
+  width: '100%',
   padding: '10px',
-  background: '#666',
+  background: '#6c757d',
   color: '#fff',
   border: 'none',
-  cursor: 'pointer'
+  cursor: 'pointer',
+};
+
+const mapContainer = {
+  height: '100vh',
 };
 
 export default AdminDashboard;
+
+
 

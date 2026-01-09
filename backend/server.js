@@ -460,11 +460,20 @@ app.get('/admin/workers', async (req, res) => {
   const { language } = req.query;
   const session = driver.session();
 
-  const query = `
+  let query = `
     MATCH (w:RemoteWorker)
     WHERE w.latitude IS NOT NULL
       AND w.longitude IS NOT NULL
-      ${language ? 'AND toLower(w.spokenLanguage) CONTAINS toLower($language)' : ''}
+  `;
+
+  if (language && language.trim() !== '') {
+    query += `
+      AND w.spokenLanguage IS NOT NULL
+      AND toLower(w.spokenLanguage) CONTAINS toLower($language)
+    `;
+  }
+
+  query += `
     RETURN
       w.workerID AS workerID,
       w.firstName AS firstName,
@@ -484,6 +493,7 @@ app.get('/admin/workers', async (req, res) => {
 
   res.json(result.records.map(r => r.toObject()));
 });
+
 
 
 app.get('/admin/patients-map', async (req, res) => {

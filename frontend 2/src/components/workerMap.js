@@ -6,10 +6,9 @@ import 'leaflet/dist/leaflet.css';
 import config from '../config';
 
 /* =====================
-   MAP ICONS
+   ICONS
 ===================== */
 
-// 🟢 Available Worker
 const greenIcon = new L.Icon({
   iconUrl:
     'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
@@ -17,11 +16,8 @@ const greenIcon = new L.Icon({
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
 });
 
-// 🔴 Unavailable Worker
 const redIcon = new L.Icon({
   iconUrl:
     'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
@@ -29,11 +25,8 @@ const redIcon = new L.Icon({
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
 });
 
-// ⚫ Patient
 const blackIcon = new L.Icon({
   iconUrl:
     'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png',
@@ -41,8 +34,6 @@ const blackIcon = new L.Icon({
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
 });
 
 /* =====================
@@ -56,7 +47,7 @@ const GlobalMap = ({ appliedLanguage }) => {
   /* =====================
      FETCH WORKERS
   ===================== */
-  useEffect(() => {
+  const fetchWorkers = () => {
     axios
       .get(`${config.API_BASE_URL}/admin/workers`, {
         params: appliedLanguage
@@ -67,13 +58,13 @@ const GlobalMap = ({ appliedLanguage }) => {
         },
       })
       .then(res => setWorkers(res.data))
-      .catch(() => setWorkers([]));
-  }, [appliedLanguage]);
+      .catch(() => {});
+  };
 
   /* =====================
      FETCH PATIENTS
   ===================== */
-  useEffect(() => {
+  const fetchPatients = () => {
     axios
       .get(`${config.API_BASE_URL}/admin/patients-map`, {
         headers: {
@@ -81,22 +72,34 @@ const GlobalMap = ({ appliedLanguage }) => {
         },
       })
       .then(res => setPatients(res.data))
-      .catch(() => setPatients([]));
-  }, []);
+      .catch(() => {});
+  };
 
   /* =====================
-     VALID COORDINATES ONLY
+     AUTO REFRESH (POLLING)
+  ===================== */
+  useEffect(() => {
+    fetchWorkers();
+    fetchPatients();
+
+    const workerInterval = setInterval(fetchWorkers, 5000); // every 5s
+    const patientInterval = setInterval(fetchPatients, 10000); // every 10s
+
+    return () => {
+      clearInterval(workerInterval);
+      clearInterval(patientInterval);
+    };
+  }, [appliedLanguage]);
+
+  /* =====================
+     VALID COORDINATES
   ===================== */
   const validWorkers = workers.filter(
-    w =>
-      typeof w.latitude === 'number' &&
-      typeof w.longitude === 'number'
+    w => typeof w.latitude === 'number' && typeof w.longitude === 'number'
   );
 
   const validPatients = patients.filter(
-    p =>
-      typeof p.latitude === 'number' &&
-      typeof p.longitude === 'number'
+    p => typeof p.latitude === 'number' && typeof p.longitude === 'number'
   );
 
   /* =====================
@@ -115,19 +118,15 @@ const GlobalMap = ({ appliedLanguage }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* =====================
-         🟢🔴 REMOTE WORKERS
-      ===================== */}
+      {/* 🟢🔴 WORKERS */}
       {validWorkers.map(w => (
         <Marker
           key={w.workerID}
           position={[w.latitude, w.longitude]}
           icon={w.status === 'available' ? greenIcon : redIcon}
         >
-          <Popup maxWidth={300}>
-            <strong>
-              {w.firstName} {w.lastName}
-            </strong>
+          <Popup>
+            <strong>{w.firstName} {w.lastName}</strong>
             <hr />
             <p><b>Language:</b> {w.spokenLanguage}</p>
             <p><b>Location:</b> {w.city}, {w.country}</p>
@@ -135,12 +134,7 @@ const GlobalMap = ({ appliedLanguage }) => {
             <p><b>Rate:</b> ${w.rate}/hr</p>
             <p>
               <b>Status:</b>{' '}
-              <span
-                style={{
-                  color:
-                    w.status === 'available' ? 'green' : 'red',
-                }}
-              >
+              <span style={{ color: w.status === 'available' ? 'green' : 'red' }}>
                 {w.status}
               </span>
             </p>
@@ -148,23 +142,15 @@ const GlobalMap = ({ appliedLanguage }) => {
         </Marker>
       ))}
 
-      {/* =====================
-         ⚫ PATIENTS
-         (slight offset to avoid overlap)
-      ===================== */}
+      {/* ⚫ PATIENTS */}
       {validPatients.map(p => (
         <Marker
           key={p.patientID}
-          position={[
-            p.latitude + 0.02,
-            p.longitude + 0.02,
-          ]}
+          position={[p.latitude + 0.02, p.longitude + 0.02]}
           icon={blackIcon}
         >
-          <Popup maxWidth={300}>
-            <strong>
-              {p.firstName} {p.lastName}
-            </strong>
+          <Popup>
+            <strong>{p.firstName} {p.lastName}</strong>
             <hr />
             <p><b>Language:</b> {p.spokenLanguage}</p>
             <p><b>Location:</b> {p.city}, {p.country}</p>
@@ -177,6 +163,8 @@ const GlobalMap = ({ appliedLanguage }) => {
 };
 
 export default GlobalMap;
+
+
 
 
 

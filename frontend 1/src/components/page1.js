@@ -24,7 +24,7 @@ const Page1 = () => {
   return (
     <div style={bodyStyle}>
       <form style={formStyle} onSubmit={handleRegister}>
-        <h1 style={headerStyle}>Patient Registration</h1>
+        <h1 style={headerStyle}>User Registration</h1>
 
         <div style={inputContainerStyle}>
           <label>Email</label>
